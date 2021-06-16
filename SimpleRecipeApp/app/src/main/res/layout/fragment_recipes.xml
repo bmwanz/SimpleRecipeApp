@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:alpha="0.5"
-        android:text="No Internet Connection."
+        android:text="@string/no_internet_connection"
         android:textSize="18sp"
         android:textStyle="bold"
         android:visibility="invisible"
@@ -57,6 +57,7 @@
         android:src="@drawable/ic_restaurant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/white" />
+        app:tint="@color/white"
+        android:contentDescription="@string/empty_string" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
