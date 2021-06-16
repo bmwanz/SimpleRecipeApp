@@ -15,4 +15,11 @@
     <string name="recipes_fragment">Recipe</string>
     <string name="favorite_recipes_fragment">Favorites</string>
     <string name="food_joke">Joke</string>
+    <string name="no_internet_connection">No Internet Connection.</string>
+    <string name="empty_string" />
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="test">TEST</string>
+    <string name="favorite">Favorite</string>
+    <string name="history">History</string>
+    <string name="vegan">Vegan</string>
 </resources>
