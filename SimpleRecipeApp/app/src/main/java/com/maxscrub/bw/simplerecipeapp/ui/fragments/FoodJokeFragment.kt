@@ -1,10 +1,11 @@
-package com.maxscrub.bw.simplerecipeapp
+package com.maxscrub.bw.simplerecipeapp.ui.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.maxscrub.bw.simplerecipeapp.R
 
 class FoodJokeFragment : Fragment() {
 
