@@ -1,4 +1,4 @@
-package com.maxscrub.bw.simplerecipeapp
+package com.maxscrub.bw.simplerecipeapp.data.network
 
 import com.maxscrub.bw.simplerecipeapp.models.FoodRecipe
 import retrofit2.Response

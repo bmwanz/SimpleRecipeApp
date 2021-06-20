@@ -1,19 +1,24 @@
 package com.maxscrub.bw.simplerecipeapp.di
 
-import com.maxscrub.bw.simplerecipeapp.Constants.Companion.BASE_URL
-import com.maxscrub.bw.simplerecipeapp.FoodRecipesApi
+import com.maxscrub.bw.simplerecipeapp.util.Constants.Companion.BASE_URL
+import com.maxscrub.bw.simplerecipeapp.data.network.FoodRecipesApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
+/*
+    ApplicationComponent -> SingletonComponent
+    https://stackoverflow.com/questions/65266636/is-applicationcomponent-deprecated
+ */
+
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object NetworkModule {
 
     @Singleton
