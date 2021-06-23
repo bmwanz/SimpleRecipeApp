@@ -40,6 +40,10 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -73,8 +77,10 @@ dependencies {
     androidTestImplementation "androidx.room:room-testing:2.2.5"
 
     // Data binding
-    kapt "com.android.databinding:compiler:3.2.0-alpha10"
-    kapt "androidx.databinding:databinding-common:4.1.0"
+    kapt "androidx.databinding:databinding-common:4.2.1"
+//    kapt "com.android.databinding:compiler:3.2.0-alpha10"
+    // don't need compiler anymore?
+    // https://stackoverflow.com/questions/50594507/cannot-find-symbol-databindingcomponent-on-android-studio-3-2-canary-16-kotlin-p
 
     // DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0-alpha01"

@@ -1,25 +1,28 @@
-package com.maxscrub.bw.simplerecipeapp
+package com.maxscrub.bw.simplerecipeapp.viewmodels
 
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.maxscrub.bw.simplerecipeapp.data.Repository
 import com.maxscrub.bw.simplerecipeapp.models.FoodRecipe
 import com.maxscrub.bw.simplerecipeapp.util.NetworkResult
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import javax.inject.Inject
 
-class MainViewModel @ViewModelInject constructor(
+@HiltViewModel
+class MainViewModel @Inject constructor(
     private val repository: Repository,
     application: Application
 ) : AndroidViewModel(application) {
 
-    var recipesResponse : MutableLiveData<NetworkResult<FoodRecipe>> = MutableLiveData()
+    var recipesResponse: MutableLiveData<NetworkResult<FoodRecipe>> = MutableLiveData()
+
 
     fun getRecipes(queries: Map<String, String>) = viewModelScope.launch {
         getRecipesSafeCall(queries)
@@ -27,15 +30,15 @@ class MainViewModel @ViewModelInject constructor(
 
     private suspend fun getRecipesSafeCall(queries: Map<String, String>) {
         recipesResponse.value = NetworkResult.Loading()
-        if(hasInternetConnection()) {
+        if (hasInternetConnection()) {
             try {
                 val response = repository.remote.getRecipes(queries)
                 recipesResponse.value = handleFoodRecipesResponse(response)
             } catch (e: Exception) {
-                recipesResponse.value = NetworkResult.Error("Recipes Not Found")
+                recipesResponse.value = NetworkResult.Error("Recipes not found.")
             }
         } else {
-            recipesResponse.value = NetworkResult.Error("No Internet Connection")
+            recipesResponse.value = NetworkResult.Error("No Internet Connection.")
         }
     }
 
@@ -64,10 +67,8 @@ class MainViewModel @ViewModelInject constructor(
         val connectivityManager = getApplication<Application>().getSystemService(
             Context.CONNECTIVITY_SERVICE
         ) as ConnectivityManager
-
         val activeNetwork = connectivityManager.activeNetwork ?: return false
         val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-
         return when {
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
