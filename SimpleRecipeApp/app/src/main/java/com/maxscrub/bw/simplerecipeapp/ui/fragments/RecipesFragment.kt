@@ -1,26 +1,30 @@
 package com.maxscrub.bw.simplerecipeapp.ui.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.maxscrub.bw.simplerecipeapp.viewmodels.MainViewModel
-import com.maxscrub.bw.simplerecipeapp.R
 import com.maxscrub.bw.simplerecipeapp.adapters.RecipesAdapter
-import com.maxscrub.bw.simplerecipeapp.util.Constants
+import com.maxscrub.bw.simplerecipeapp.databinding.FragmentRecipesBinding
 import com.maxscrub.bw.simplerecipeapp.util.NetworkResult
+import com.maxscrub.bw.simplerecipeapp.util.observeOnce
+import com.maxscrub.bw.simplerecipeapp.viewmodels.MainViewModel
 import com.maxscrub.bw.simplerecipeapp.viewmodels.RecipesViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_recipes.view.*
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class RecipesFragment : Fragment() {
 
-    private lateinit var mView: View
+    private var _binding: FragmentRecipesBinding? = null
+    private val binding get() = _binding!!
+
     private val mAdapter by lazy { RecipesAdapter() }
     private lateinit var mainViewModel: MainViewModel
     private lateinit var recipesViewModel: RecipesViewModel
@@ -34,23 +38,43 @@ class RecipesFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.fragment_recipes, container, false)
+        _binding = FragmentRecipesBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this        // for using live data in layout
+        binding.mainViewModel = mainViewModel
 
         setupRecyclerView()
-        requestApiData()
+        readDatabase()
 
-        return mView
+        return binding.root
     }
 
     private fun setupRecyclerView() {
-        mView.recyclerview.adapter = mAdapter;
-        mView.recyclerview.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerview.adapter = mAdapter
+        binding.recyclerview.layoutManager = LinearLayoutManager(requireContext())
         showShimmerEffect()
     }
 
+
+    private fun readDatabase() {
+        lifecycleScope.launch {
+            // database is List observed from readRecipe LiveData
+            // observeOnce, only call when readDatabase function is called instead of everytime live data triggered
+            mainViewModel.readRecipe.observeOnce(viewLifecycleOwner, { database ->
+                if (database.isNotEmpty()) {
+                    Log.d("RecipesFragment", "reading database")
+                    mAdapter.setData(database[0].foodRecipe)
+                    hideShimmerEffect()
+                } else {
+                    requestApiData()
+                }
+            })
+        }
+    }
+
     private fun requestApiData() {
+        Log.d("RecipesFragment", "requestApiData")
         mainViewModel.getRecipes(recipesViewModel.applyQueries())
         mainViewModel.recipesResponse.observe(viewLifecycleOwner, { response ->
             when (response) {
@@ -63,6 +87,7 @@ class RecipesFragment : Fragment() {
 
                 is NetworkResult.Error -> {
                     hideShimmerEffect()
+                    loadDataFromCache()
                     Toast.makeText(
                         requireContext(),
                         response.message.toString(),
@@ -77,12 +102,27 @@ class RecipesFragment : Fragment() {
         })
     }
 
+    private fun loadDataFromCache() {
+        lifecycleScope.launch {
+            mainViewModel.readRecipe.observe(viewLifecycleOwner, { database ->
+                if (database.isNotEmpty()) {
+                    mAdapter.setData(database[0].foodRecipe)
+                }
+            })
+        }
+    }
+
     private fun showShimmerEffect() {
-        mView.recyclerview.showShimmer()
+        binding.recyclerview.showShimmer()
     }
 
     private fun hideShimmerEffect() {
-        mView.recyclerview.hideShimmer()
+        binding.recyclerview.hideShimmer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }
